@@ -5,9 +5,9 @@ export enum TaskPriority {
 };
 
 export enum TaskStatus {
-  pending = "pending",
-  in_progress = "in_progress",
-  completed = "completed",
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
 }
 
 export interface Task {
@@ -17,10 +17,10 @@ export interface Task {
     status: TaskStatus;
     priority: TaskPriority;
     createdAt : Date;
-    updatedAt : Date;
-    completedAt : Date;
+    updatedAt?: Date;
+    completedAt?: Date;
 }
-
+//usuario
 export interface CreatedTaskDTO {
     title : string;
     description : string;
