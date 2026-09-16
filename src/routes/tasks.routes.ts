@@ -5,10 +5,10 @@ import { TaskController } from "../controller/task.controller";
 const tasksRoutes = Router();
 const taskController = new TaskController();
 
-tasksRoutes.get('/tasks', (req:Request, res: Response)=>{
-    return res.json(tasks);
-});
+tasksRoutes.get('/tasks', taskController.list);
 
 tasksRoutes.get('/task/:id', taskController.findById)
+
+tasksRoutes.post('/task', taskController.create)
 
 export{tasksRoutes}
