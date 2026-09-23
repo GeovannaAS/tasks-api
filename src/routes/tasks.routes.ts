@@ -11,4 +11,8 @@ tasksRoutes.get('/task/:id', taskController.findById)
 
 tasksRoutes.post('/task', taskController.create)
 
+tasksRoutes.patch('/task/:id', taskController.update)
+
+tasksRoutes.delete('/task/:id', taskController.delete)
+
 export{tasksRoutes}
