@@ -1,6 +1,13 @@
 import { TaskService } from "../service/task.service";
 import { Response, Request } from "express";
-import { CreatedTaskDTO, TaskPriority, TaskStatus } from "../models/task.model";
+import {
+  CreatedTaskDTO,
+  Task,
+  TaskPriority,
+  TaskStatus,
+  UpdateTaskDTO,
+} from "../models/task.model";
+import { tasks } from "../data/tasks";
 
 export class TaskController {
   private taskService = new TaskService();
@@ -32,6 +39,7 @@ export class TaskController {
       });
     }
   };
+
   list = (req: Request, res: Response) => {
     const allowedFilters = ["status", "priority"];
     const receivedFilters = Object.keys(req.query);
@@ -41,7 +49,7 @@ export class TaskController {
 
     if (hasInvalidFilters) {
       return res.status(400).json({
-        "message" : "Invalid Filter Paramter",
+        message: "Invalid Filter Paramter",
       });
     }
     const { status, priority } = req.query;
@@ -51,7 +59,7 @@ export class TaskController {
       !Object.values(TaskStatus).includes(status as TaskStatus)
     ) {
       return res.status(400).json({
-        "message" : "Invalid Status",
+        message: "Invalid Status",
       });
     }
 
@@ -60,35 +68,123 @@ export class TaskController {
       !Object.values(TaskPriority).includes(priority as TaskPriority)
     ) {
       return res.status(400).json({
-        "message" : "Invalid Priority",
+        message: "Invalid Priority",
       });
     }
 
-    const tasksList = this.taskService.list(priority as TaskPriority | undefined, status as TaskStatus | undefined);
+    const tasksList = this.taskService.list(
+      priority as TaskPriority | undefined,
+      status as TaskStatus | undefined,
+    );
     return res.status(200).json(tasksList);
-
   };
+
   findById = (req: Request, res: Response): Response => {
     try {
       const id = Number(req.params.id);
       if (Number.isNaN(id)) {
         return res.status(400).json({
-          "message" : "id must be a number",
+          message: "id must be a number",
         });
       }
       const task = this.taskService.findById(id);
       if (!task) {
         return res.status(404).json({
-          "message" : "task not found",
+          message: "task not found",
         });
       }
       return res.status(200).json(task);
     } catch (error) {
       return res.status(500).json({
-        "message" : "internal server error",
+        message: "internal server error",
       });
     }
   };
-  update = () => {};
-  delete = () => {};
+
+  update = (req: Request, res: Response) => {
+    try {
+      const dataUpdate = req.body as UpdateTaskDTO;
+      const id = Number(req.params.id);
+
+      if(Number.isNaN(id)){
+        return res.status(400).json({
+          "message" : "id must be a valid number"
+        })
+      }
+
+      if(dataUpdate &&
+        Object.keys(dataUpdate).length === 0
+      ){
+        return res.status(400).json({
+          "message" : "update data is required"
+        })
+      }
+
+      if(dataUpdate.title !== undefined &&
+        dataUpdate.title.trim() === ""
+      ){
+        return res.status(400).json({
+          "message" : "title cannot be empty"
+        })
+      }
+
+      if(dataUpdate.description !== undefined &&
+        dataUpdate.description.trim() === ""
+      ){
+        return res.status(400).json({
+          "message" : "description cannot be empty"
+        })
+      }
+
+      if(dataUpdate.status &&
+        !Object.values(TaskStatus).includes(dataUpdate.status)
+      ){
+        return res.status(400).json({
+          "message" : "invalid status"
+        })
+      }
+
+      if(dataUpdate.priority &&
+        !Object.values(TaskPriority).includes(dataUpdate.priority)
+      ){
+        return res.status(400).json({
+          "message" : "invalid priority"
+        })
+      }
+
+      const updateTask = this.taskService.update(id , dataUpdate);
+
+      if(!updateTask){
+        return res.status(404).json({
+          "message" : "task not found"
+        })
+      }
+      return res.status(200).json(updateTask)
+
+    } catch (error) {
+      
+    }
+  };
+
+  delete = (req: Request, res: Response) => {
+    const taskId = Number(req.params.id);
+
+    if (Number.isNaN(taskId)) {
+      return res.status(400).json({
+        message: "ID must be a number.",
+      });
+    }
+
+    const deleteTask = this.taskService.delete(taskId);
+
+    if (!deleteTask) {
+      return res.status(404).json({
+        message: "task not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "task deleted successfully",
+    });
+  };
 }
