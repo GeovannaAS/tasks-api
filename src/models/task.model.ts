@@ -30,6 +30,6 @@ export interface CreatedTaskDTO {
 export interface UpdateTaskDTO {
     title?: string;
     description?: string;
-    status?: string;
+    status?: TaskStatus;
     priority?: TaskPriority;
 }
