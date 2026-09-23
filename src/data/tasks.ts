@@ -8,4 +8,14 @@ export const tasks = [  {
     status: TaskStatus.PENDING,
     createdAt: new Date(),
   },
+
+  {
+    id: 2,
+    title: "Estudar Node.js",
+    description: "Revisar interfaces e enums",
+    priority: TaskPriority.HIGH,
+    status: TaskStatus.PENDING,
+    createdAt: new Date(),
+  },
 ];
+
